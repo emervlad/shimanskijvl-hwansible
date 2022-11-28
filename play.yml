@@ -1,0 +1,23 @@
+---
+- hosts: centos
+  become: yes
+  vars:
+    - nginx_user: nginx
+  roles:
+   - epel
+   - nginx
+
+- hosts: ubuntu
+  become: yes
+  vars:
+    - nginx_user: www-data
+  roles:
+   - nginx
+
+- hosts: arch
+  become: yes
+  vars:
+    - nginx_user: http
+  roles:
+   - pacman_update
+   - nginx

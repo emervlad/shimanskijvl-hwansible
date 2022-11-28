@@ -1,0 +1,37 @@
+---
+- name: Install Nginx Web Server on CentOS
+  yum:
+    name=nginx
+    state=latest
+  when:
+    inventory_hostname in groups["centos"]
+
+- name: Install Nginx Web Server on Ubuntu
+  apt:
+    name=nginx
+    state=latest
+  when:
+    inventory_hostname in groups["ubuntu"]
+
+- name: Install Nginx Web Server and Cronie on Arch
+  pacman:
+    name: ["nginx", "cronie", "vi"]
+    state: latest
+  when:
+    inventory_hostname in groups["arch"]
+
+- name: Replace nginx.conf
+  template:
+    src=templates/nginx.conf
+    dest=/etc/nginx/nginx.conf
+
+- name: Copy static content
+  template:
+    src=templates/service_state
+    dest=/home/vagrant/service_state_original
+  notify:
+    - nginx restart
+    - nginx systemd
+    - copy text
+    - start cronie daemon on arch
+    - cron task 

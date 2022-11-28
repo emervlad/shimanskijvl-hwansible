@@ -1,0 +1,4 @@
+- name: Run the equivalent of "pacman -Syu" as a separate step
+  pacman:
+    update_cache: true
+    upgrade: true

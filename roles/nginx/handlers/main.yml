@@ -1,0 +1,33 @@
+---
+- name: nginx restart
+  service:
+    name: nginx
+    state: restarted
+  when:
+    inventory_hostname not in groups["arch"]
+
+- name: nginx systemd
+  systemd:
+    name: nginx
+    state: restarted 
+  when:
+    inventory_hostname in groups["arch"]
+
+- name: copy text
+  copy:
+    src: /home/vagrant/service_state_original
+    dest: /opt/service_state
+    remote_src: true
+
+- name: start cronie daemon on arch
+  systemd:
+    name: cronie
+    state: restarted
+  when:
+   inventory_hostname in groups["arch"]
+
+- name: cron task
+  cron:
+    name: "update text file"
+    job: sudo sed -i "s/is .*$/is $(($(ps -o etimes= -p $(cat /var/run/nginx.pid)) / 60)) minutes/" /opt/service_state
+
